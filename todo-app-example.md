@@ -36,11 +36,18 @@ To just get access to the server functions from the command line (great for debu
 
 Head over to http://0.0.0.0:4000/todos to see the new route we just made in the browser :sparkles:
 
+### Explain the relationship between controllers, templates and the router.
+
 ### Time for some cleanup!
 
-We don't want the application to have individual pages for each todo so the first step is to remove the show.html.eex template file from `lib/ptodos_web/templates/todo` and the `show` function from `lib/ptodos_web/controllers/todo_controller.ex`
+#### Remove the show template
+We don't want the application to have individual pages for each todo so the first step is to remove the show.html.eex template file from `lib/ptodos_web/templates/todo`.
 
-We'll also need to remove the show button from index template:
+Now the template is removed, we'll also need to take out the show function from the todo_controller (`lib/ptodos_web/controllers/todo_controller.ex`).
+
+#### Remove all links and redirects to the show route
+
+First remove the show button from the index template.
 
 This:
 
@@ -52,7 +59,7 @@ This:
 </td>
 ```
 
-Should become:
+Should become this:
 
 ```iex
 <td class="text-right">
@@ -60,3 +67,13 @@ Should become:
   <span><%= link "Delete", to: todo_path(@conn, :delete, todo), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
 </td>
 ```
+
+Next, within the todo_controller we'll need to change how the `update` function redirects. At the moment when a todo is successfully edited, the app tries to redirect to the `show` page for that todo. Instead, it should just redirect back to the index route where all todos are listed.
+
+Have a look inside the `{:ok, todo}` case within the `update` function and change the redirect to the following:
+
+```iex
+redirect(to: todo_path(conn, :index))
+```
+
+The `create` function will need the same fix.
