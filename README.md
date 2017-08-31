@@ -66,7 +66,7 @@ First remove the show button from the index template.
 
 This:
 
-```iex
+```elixir
 <td class="text-right">
   <span><%= link "Show", to: todo_path(@conn, :show, todo), class: "btn btn-default btn-xs" %></span>
   <span><%= link "Edit", to: todo_path(@conn, :edit, todo), class: "btn btn-default btn-xs" %></span>
@@ -76,7 +76,7 @@ This:
 
 Should become this:
 
-```iex
+```elixir
 <td class="text-right">
   <span><%= link "Edit", to: todo_path(@conn, :edit, todo), class: "btn btn-default btn-xs" %></span>
   <span><%= link "Delete", to: todo_path(@conn, :delete, todo), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
@@ -87,7 +87,7 @@ Next, within the todo_controller we'll need to change how the `update` function 
 
 Have a look inside the `{:ok, todo}` case within the `update` function and change the redirect to the following:
 
-```iex
+```elixir
 redirect(to: todo_path(conn, :index))
 ```
 
@@ -137,7 +137,7 @@ Ueberauth is an amazing module that does a ton of authentication setup behind th
 
 The first step's easy because we only need to add one provider -- Github OAuth. Open up `config/config.exs` and chuck the following code at the end of the file:
 
-```iex
+```elixir
 config :ueberauth, Ueberauth,
   providers: [
     github: { Ueberauth.Strategy.Github, [] }
@@ -146,7 +146,7 @@ config :ueberauth, Ueberauth,
 
 In the next few steps we'll connect Envy to a `.env` containing our Github OAuth information. For the moment it's fine to just point Ueberauth at some non-existent GITHUB_SECRET and GITHUB_CLIENT_ID environment variables. Add the following right underneath previous code block:   
 
-```iex
+```elixir
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
  client_id: System.get_env("GITHUB_CLIENT_ID"),
  client_secret: System.get_env("GITHUB_SECRET")
@@ -185,7 +185,7 @@ Open `application.ex` and add the following:
 
 I'll quickly run through the code line by line:
 
-```iex
+```elixir
 unless Mix.env == :prod do # this stops the .env from loading in production
 Envy.load(["config.env"]) # load the environment variables with Envy
 Envy.reload_config() # force Elixir to reload with the new variables
