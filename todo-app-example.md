@@ -42,6 +42,8 @@ We don't want the application to have individual pages for each todo so the firs
 
 We'll also need to remove the show button from index template:
 
+This:
+
 ```iex
 <td class="text-right">
   <span><%= link "Show", to: todo_path(@conn, :show, todo), class: "btn btn-default btn-xs" %></span>
@@ -50,7 +52,7 @@ We'll also need to remove the show button from index template:
 </td>
 ```
 
-Should become
+Should become:
 
 ```iex
 <td class="text-right">
