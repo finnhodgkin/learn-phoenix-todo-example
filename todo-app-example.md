@@ -80,4 +80,14 @@ The `create` function will need the same fix.
 
 #### Remove the annoying 'are you sure' confirmation popup for deleting todos
 
-It should be really easy to manipulate todos so lets remove the popup alert from `index.html.eex`. It's a super easy fix, just delete ` data: [confirm: "Are you sure?"],`.
+Todos should be really easy to manipulate so let's remove the popup alert from `index.html.eex`. It's a super easy fix, just delete ` data: [confirm: "Are you sure?"],`.
+
+#### Remove the Phoenix branding from the app layout
+
+The layout file (`templates/layout/app.html.eex`) holds all html content that's shared between many pages. For example css imports and html headers usually sit in there.
+
+By default Phoenix also includes a big logo and a link to 'Get Started' with Phoenix. Lets trash this.
+
+Delete everything inside the <header> tags to clean it up.
+
+### Add
