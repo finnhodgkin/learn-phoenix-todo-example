@@ -77,3 +77,7 @@ redirect(to: todo_path(conn, :index))
 ```
 
 The `create` function will need the same fix.
+
+#### Remove the annoying 'are you sure' confirmation popup for deleting todos
+
+It should be really easy to manipulate todos so lets remove the popup alert from `index.html.eex`. It's a super easy fix, just delete ` data: [confirm: "Are you sure?"],`.

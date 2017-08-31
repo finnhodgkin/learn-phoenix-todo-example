@@ -15,7 +15,7 @@
 
       <td class="text-right">
         <span><%= link "Edit", to: todo_path(@conn, :edit, todo), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: todo_path(@conn, :delete, todo), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+        <span><%= link "Delete", to: todo_path(@conn, :delete, todo), method: :delete, class: "btn btn-danger btn-xs" %></span>
       </td>
     </tr>
 <% end %>
