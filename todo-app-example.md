@@ -1,3 +1,10 @@
+## Introduce project and outline features
+
+* OAuth
+* Todos
+* Todo lists
+* Ownership of todo lists and todos
+
 ## First steps
 
 ### Install Postgresql, Elixir and Phoenix
