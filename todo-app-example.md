@@ -1,4 +1,4 @@
-## Introduce project and outline features
+## Todo app features
 
 * OAuth
 * Todos
@@ -8,7 +8,6 @@
 ## First steps
 
 ### Install Postgresql, Elixir and Phoenix
-
 
 ### Create a new Phoenix project
 Run `mix phx.new ptodos`.
@@ -111,3 +110,15 @@ Hopefully if you head over to http://0.0.0.0:4000/todos it'll look something lik
 ![OMG it worked!](https://user-images.githubusercontent.com/22300773/29921885-51e9e594-8e4b-11e7-8415-f7e73c722e50.png)
 
 ## OAuth authentication
+
+Next we'll add OAuth user authentication so our todos can only be changed by their owners. To accomplish this we'll be using the Elixir [Ueberauth module](https://github.com/ueberauth/ueberauth) with the [Github OAuth strategy](https://github.com/ueberauth/ueberauth_github). New modules can be added to a project by including them in `mix.exs` and installing with `mix deps.get`. OAuth also requires some hidden keys that we don't want pushed up to version control (Github, etc.) - for this we'll use [Envy](https://github.com/BlakeWilliams/envy) to automatically load environment variables.
+
+#### Installing the dependencies
+
+Hop into mix.exs and add `:ueberauth` and `:ueberauth_github` to `extra_applications`:
+
+![extra_applications](https://user-images.githubusercontent.com/22300773/29924988-d0304744-8e56-11e7-9c47-6c78b610e8a4.png)
+
+We'll also need to add all three modules to our dependencies list. At the time of writing (Aug 2017) the version numbers in the picture below are all up to date. To be on the safe side have a quick Google to check there aren't any newer versions.
+
+![dependencies](https://user-images.githubusercontent.com/22300773/29925540-7f452b36-8e58-11e7-9a8f-1a80a15f0be5.png)
