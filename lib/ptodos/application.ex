@@ -6,6 +6,11 @@ defmodule Ptodos.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    unless Mix.env == :prod do
+      Envy.load(["config.env"])
+      Envy.reload_config()
+    end
+
     # Define workers and child supervisors to be supervised
     children = [
       # Start the Ecto repository

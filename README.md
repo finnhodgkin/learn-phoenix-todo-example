@@ -12,7 +12,9 @@
 ### Create a new Phoenix project
 Run `mix phx.new ptodos`.
 
-This creates a new `ptodos` directory with a simple Phoenix server.
+This creates a new `ptodos` directory with a simple Phoenix server setup.
+
+### Run through the file structure of Phoenix applications as well as the differences between 1.3 and <1.3
 
 ### Build the database
 Run `mix Ecto.create`
@@ -21,6 +23,8 @@ If it complains about your postgres username & password check the information in
 config/dev.exs matches your postgres login details.
 
 If you've lost or don't know your password, try following [this Stack Overflow solution](https://stackoverflow.com/questions/35785892/ecto-postgres-install-error-password-authentication-failed#answer-37375810).
+
+### Briefly run through migrations/schemas/repo
 
 ## Add a route to display todos
 
@@ -47,7 +51,7 @@ To just get access to the server functions from the command line (great for debu
 
 Head over to http://0.0.0.0:4000/todos to see the new route we just made in the browser :sparkles:
 
-### Explain the relationship between controllers, templates and the router.
+### Explain the relationship between controllers, templates and the router. Maybe just link to the Phoenix docs on each topic.
 
 ### Time for some cleanup!
 
@@ -129,9 +133,9 @@ Both Ueberauth and Envy require some additional configuration.
 
 __Ueberauth__
 
-Ueberauth is an amazing module that does a ton of authentication setup behind the scenes. Unfortunately it doesn't quite do __everything__. We need to provide it with some information on our application setup. It needs to know which OAuth providers to use, and also what the _client id_ and _client secret_ for the application are.
+Ueberauth is an amazing module that does a ton of authentication setup behind the scenes. Unfortunately it doesn't quite do __everything__. We need to provide it with some info about our application setup: which OAuth providers to use, and the OAuth _client id_ and _secret_.
 
-The first step is easy because we're just using a single provider -- Github OAuth. Open up `config/config.exs` and chuck the following code at the end of the file:
+The first step's easy because we only need to add one provider -- Github OAuth. Open up `config/config.exs` and chuck the following code at the end of the file:
 
 ```iex
 config :ueberauth, Ueberauth,
@@ -140,10 +144,50 @@ config :ueberauth, Ueberauth,
   ]
 ```
 
-Next we need to set up our
+In the next few steps we'll connect Envy to a `.env` containing our Github OAuth information. For the moment it's fine to just point Ueberauth at some non-existent GITHUB_SECRET and GITHUB_CLIENT_ID environment variables. Add the following right underneath previous code block:   
 
 ```iex
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
  client_id: System.get_env("GITHUB_CLIENT_ID"),
  client_secret: System.get_env("GITHUB_SECRET")
+```
+
+
+__Github__
+
+For OAuth to work, the application needs to be registered on the provider's website. Log in to Github and point the browser to https://github.com/settings/developers
+
+Hit `Register a new application` and fill in the form with with the following details:
+
+Application name: `Phoenix Todos`<br/>
+Homepage URL (this could be your homepage or just a temporary address): `http://0.0.0.0:4000`<br/>
+Application description: `[optional]`<br/>
+Authorization callback URL: `http://0.0.0.0:4000/auth/github/callback`
+
+Click `Register application` and leave the tab open--we'll need the Client Id and Secret in a moment.
+
+__Envy__
+
+Environment variables are absolutely pointless if we don't add the secrets they contain to our application's .gitignore. __Before we move on add a line with `config.env` to your .gitignore, then add and commit your changes!__
+
+Once you're sure git isn't going to push your secrets to Github, create a `config.env` in your project's root and add your OAuth Client ID and Secret with the following format:
+
+```
+GITHUB_SECRET=<your secret key here>
+GITHUB_CLIENT_ID=<your client id here>
+```
+
+The Envy configuration is a little different to Ueberauth in that it takes place in the application file (`lib/ptodos/application.ex`) rather than `config.exs`.
+
+Open `application.ex` and add the following:
+
+![envy-setup](https://user-images.githubusercontent.com/22300773/29937760-86acc804-8e7e-11e7-886b-d450175a54a0.png)
+
+I'll quickly run through the code line by line:
+
+```iex
+unless Mix.env == :prod do # this stops the .env from loading in production
+Envy.load(["config.env"]) # load the environment variables with Envy
+Envy.reload_config() # force Elixir to reload with the new variables
+end # end...
 ```
