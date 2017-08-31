@@ -1,4 +1,7 @@
+## First steps
+
 ### Install Postgresql, Elixir and Phoenix
+
 
 ### Create a new Phoenix project
 Run `mix phx.new ptodos`.
@@ -12,6 +15,8 @@ If it complains about your postgres username & password check the information in
 config/dev.exs matches your postgres login details.
 
 If you've lost or don't know your password, try following [this Stack Overflow solution](https://stackoverflow.com/questions/35785892/ecto-postgres-install-error-password-authentication-failed#answer-37375810).
+
+## Add a route to display todos
 
 ### Generate a todos route
 Run `mix phx.gen.html Todos Todo todos title:string`.
@@ -90,4 +95,12 @@ By default Phoenix also includes a big logo and a link to 'Get Started' with Pho
 
 Delete everything inside the <header> tags to clean it up.
 
-### Add
+### Test the app
+
+Run `mix phx.server` to test the app.
+
+Hopefully if you head over to http://0.0.0.0:4000/todos it'll look something like this:
+
+![OMG it worked!](https://user-images.githubusercontent.com/22300773/29921885-51e9e594-8e4b-11e7-8415-f7e73c722e50.png)
+
+## OAuth authentication
