@@ -364,7 +364,7 @@ defmodule PtodosWeb.AuthController do
 end
 ```
 
-_But where are the controllers?_
+> _But where are the controllers?_
 
 Lets start by defining the functions (controllers) we'll need inside the auth
 module. Ueberauth adds OAuth information to the connection under 'assigns', so
@@ -381,7 +381,7 @@ def signout(conn, _params) do
 end
 ```
 
-_But they don't do anything_ :woman_shrugging:
+> _But they don't do anything_ :woman_shrugging:
 
 Let's work on the callback first. Hop over to `/github` to see if
 Ueberauth redirects through Github correctly. If all is well it should take you
@@ -404,8 +404,91 @@ have a user but they're not stored in our database, and the browser won't
 'remember' who it is if you navigate to a different page. Luckily Phoenix has a
 nice session storage setup we can utilise.
 
-Before we get on to that, first let's add a `users` table to the database.
+Before we get on to that, let's work on adding `users` to the database.
 
-_What about signout?_
+> _What about signout?_
 
 We'll leave the signout controller until we've got a working login.
+
+### Add a users context
+
+When the todos controller, context and templates were generated we used
+`mix phx.gen.html`. For `users` we don't need templates or controllers at all:
+the app doesn't have a user control panel, just users in a database.
+
+This time round just use
+`mix phx.gen.context Users User users email:string name:string` to generate the
+context with no templates - Phoenix won't touch `lib/ptodos_web` at all. We want
+each user to have an email and a name (the information we pulled from OAuth).
+
+Run `mix ecto.migrate` to add the users table to postgres.
+
+### Add yourself to the database
+
+First lets define a private function in AuthController module that checks to see
+if a user exists in the database and adds them if they don't:
+
+```elixir
+defp insert_or_sign_user(user) do
+  case Users.get_by_email(user.email) do
+    nil ->
+      Users.create_user(user)
+    user ->
+      {:ok, user}
+  end
+end
+```
+
+In the AuthController callback function we'll call this function and then
+redirect with a welcome flash message (or error if something breaks):
+
+```elixir
+def callback(%{assigns: %{ueberauth_auth: %{info: %{email: email, name: name}}}} = conn, _params) do
+  case insert_or_sign_user(%{email: email, name: name) do
+    {:ok, user} ->
+      conn
+      |> put_flash(:info, "Welcome back!")
+      |> redirect(to: todo_path(conn, :index))
+    {:error, _reason} ->
+      conn
+      |> put_flash(:error, "Error signing in")
+      |> redirect(to: todo_path(conn, :index))
+  end
+end
+```
+
+The Users context currently doesn't have a `get_by_email/1` function. To add it
+hop over to `/lib/ptodos/users/users.ex` and define it:
+
+```elixir
+def get_by_email(email), do: Repo.get_by(User, email: email)
+```
+
+### Cookie time :cookie:
+
+Adding a secure (encrypted) session cookie is super easy with Phoenix. Just pipe
+the conn in the callback through a put_session call:
+
+```elixir
+def callback(%{assigns: %{ueberauth_auth: %{info: %{email: email, name: name}}}} = conn, _params) do
+  case insert_or_sign_user(%{email: email, name: name}) do
+    {:ok, user} ->
+      conn
+      |> put_flash(:info, "Welcome back!")
+      |> put_session(:user_id, user.id)
+      |> redirect(to: todo_path(conn, :index))
+#...
+```
+
+### Create the signout controller
+
+Removing a session is even easier than adding one:
+
+```elixir
+def signout(conn, _params) do
+  conn
+  |> put_flash(:info, "Signed out")
+  |> configure_session(drop: true)
+  |> redirect(to: todo_path(conn, :index))
+end
+```
