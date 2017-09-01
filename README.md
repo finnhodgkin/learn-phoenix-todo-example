@@ -84,7 +84,7 @@ should be a prompt about the new files:
     resources "/todos", TodoController
 
 ### Do the router thing
-Following the hint above, add the new `todos` route to the router
+Following the hint above add the new `todos` route to the router
 (`/lib/ptodos_web/router.ex`) :sparkles:
 
 >__The router__
