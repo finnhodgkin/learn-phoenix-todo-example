@@ -18,8 +18,8 @@ then that's still a big win! :tada:
 
 ### Install Postgresql, Elixir and Phoenix
 
-Both Phoenix and Elixir have great installation instructions for Mac, Windows,
-Linux and even Raspberry Pi. The
+An example of Phoenix and Elixir's great documentation is their exceptional
+installation instructions for Mac, Windows, Linux and even Raspberry Pi. The
 [Phoenix installation instructions](https://hexdocs.pm/phoenix/installation.html)
 contain links to the other sites so should do fine.
 
