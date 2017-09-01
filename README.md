@@ -213,7 +213,7 @@ don't want pushed up to version control (Github, etc.) - for this we'll be using
 [Envy](https://github.com/BlakeWilliams/envy) to automatically load environment
 variables.
 
-#### Installing the dependencies
+### Installing the dependencies
 
 Hop into mix.exs and add `:ueberauth` and `:ueberauth_github` to
 `extra_applications`:
@@ -227,7 +227,7 @@ versions available.
 
 ![dependencies](https://user-images.githubusercontent.com/22300773/29925540-7f452b36-8e58-11e7-9a8f-1a80a15f0be5.png)
 
-#### Configuring the dependencies
+### Configuring the dependencies
 
 Both Ueberauth and Envy require some additional configuration.
 
@@ -310,3 +310,33 @@ unless Mix.env == :prod do # this stops the .env from loading in production
   Envy.reload_config() # force Elixir to reload with the new variables
 end # end...
 ```
+
+### Add an authentication router scope
+
+Ueberauth comes with a bunch of pre-configured stuff that handles the actual
+OAuth handshake, but we still need to tell our router that Ueberauth exists, and
+also how to handle authentication.
+
+First `require` Ueberauth just after `use PtodosWeb, :router` at the top of
+the router. If you're coming from the land of Node.js then this will look
+familiar :sparkles:
+
+Next add an Auth scope:
+
+```elixir
+scope "/auth", PtodosWeb do
+  pipe_through :browser
+
+  get "/signout", AuthController, :signout
+  get "/:provider", AuthController, :request
+  get "/:provider/callback", AuthController, :callback
+end
+```
+
+The `scope` is where we tell Phoenix which requests should go where. For example
+here we're saying that any url starting with "/auth" will be routed to the
+contained `get`s in the AuthController. `:provider` is used because Ueberauth
+can be set up to use multiple OAuth providers (Google, Facebook, Github, etc.).
+
+Ptodos only uses Github OAuth so the only auth urls that'll actually work are
+`/signout`, `/github` and `/github/callback`.

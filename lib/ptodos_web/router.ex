@@ -1,6 +1,8 @@
 defmodule PtodosWeb.Router do
   use PtodosWeb, :router
 
+  require Ueberauth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -18,6 +20,14 @@ defmodule PtodosWeb.Router do
 
     get "/", PageController, :index
     resources "/todos", TodoController
+  end
+
+  scope "/auth", PtodosWeb do
+    pipe_through :browser
+
+    get "/signout", AuthController, :signout
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
   end
 
   # Other scopes may use custom stacks.
