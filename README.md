@@ -10,8 +10,8 @@ Both Phoenix and Elixir have __amazing__ documentation. Because of this,
 wherever possible, instead of introducing and explaining new topics we'll just
 provide a link to the appropriate documentation.
 
-If at any point you get stuck your first port of call should be the docs. If all
-you learn from this guide is how to find things in the Phoneix documentation
+If at any point you get stuck, your first port of call should be the docs. If
+all you learn from this guide is how to find things in the Phoneix documentation
 then that's still a big win! :tada:
 
 ## First steps
@@ -19,8 +19,9 @@ then that's still a big win! :tada:
 ### Install Postgresql, Elixir and Phoenix
 
 Both Phoenix and Elixir have great installation instructions for Mac, Windows,
-Linux and even Raspberry Pi. The [Phoenix installation instructions](https://hexdocs.pm/phoenix/installation.html) contains links
-to the other sites so should do fine.
+Linux and even Raspberry Pi. The
+[Phoenix installation instructions](https://hexdocs.pm/phoenix/installation.html)
+contain links to the other sites so should do fine.
 
 Raise an issue if you have any trouble installing and we'll get back to you as
 soon as possible :blush:.
@@ -34,8 +35,8 @@ setup.
 __For users coming from before version 1.3: Where's my web folder!?__
 
 The launch of 1.3 included some pretty major changes to server file structure.
-The web folder - where most of the Phoenix code live - used to sit in the
-project root. Instead, it's now located in `/lib/<projectname>_web`.
+The web folder - where most Phoenix codes lives - used to sit in the project
+root. Instead, it's now located in `/lib/<projectname>_web`.
 
 For a more comprehensive list of changes, and some info on the reasoning
 behind the changes either
@@ -47,38 +48,36 @@ or watch
 Run `mix Ecto.create`
 
 [Ecto](https://hexdocs.pm/ecto/Ecto.html) is an Elixir module for talking to and
-updating databases. By default Phoenix uses Postgresql with Ecto, but it can
+updating databases. By default Phoenix uses Postgresql with Ecto, but can
 be hooked up to a wide variety of databases.
 
-If there's an error complaining about your postgres username & password, check
-the information in `config/dev.exs` matches your postgres login details.
+If you get an error about your postgres username & password when running
+Ecto.create, check the information in `config/dev.exs` matches your postgres
+login details.
 
 If you've lost or don't know your password, try following
 [this Stack Overflow solution](https://stackoverflow.com/questions/35785892/ecto-postgres-install-error-password-authentication-failed#answer-37375810).
-
-### Briefly run through migrations/schemas/repo
-
 
 ## Add a route to display todos
 
 Our first step is to add a route to our server for displaying and manipulating
 todos. To accomplish this, a new table will need to be added to our database and
-Phoenix will need to be given instructions on how to communicate with this
-table. We'll also start to explore templating with Phoenix (serving dynamic html
-pages).
+Phoenix will need some instructions on how to communicate with the table. We'll
+also start to explore templating with Phoenix (serving dynamic html pages).
 
 ### Generate a todos route
 Run `mix phx.gen.html Todos Todo todos title:string`.
 
-This creates a set of files that do some of the initial heavy lifting for us.
+This creates a set of files that do some of the initial heavy lifting for you.
 Specifically the `.html` part tells Phoenix that we want the content to be in
-the format of html via Phoenix templating. There's also `.json` for API routes
-and `context`/`schema` for just database stuff.
+the format of html via Phoenix templates. There's also `.json` for API routes,
+`.channel` for Phoenix channels (sockets) and `context`/`schema` for just
+database stuff.
 
 To find out what the heck `phx.gen.html` is doing, head over to
 [the Phoenix docs!](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Html.html#content)
 
-Once you've run the command, in the terminal after the generation logs, there
+Once you've run the command, in the terminal after the generation logs there
 should be a prompt about the new files:
 
 > Add the resource to your browser scope in lib/todos_web/router.ex:<br><br>
@@ -106,10 +105,11 @@ Use `mix phx.server` to run the server. Phoenix ships with live reloading so
 generally while coding you can just leave the server running in the command line
 and it'll refresh whenever you make changes. The only time this isn't the case
 is when you make changes to your dependencies or sometimes with databasae
-related stuff. To close the server just hit `ctrl+c` a couple times.
+stuff. If in doubt just close the server by hitting `ctrl+c` twice and start it
+up again.
 
 To access server functions from the command line without actually running the
-server (great for debugging) use `iex -S mix`
+server (great for debugging) use `iex -S mix`.
 
 Once your server is up and running head over to http://0.0.0.0:4000/todos to see
 our new route in the browser :sparkles:
@@ -130,9 +130,10 @@ don't really want individual pages for each one. To remove this feature we'll
 need to get rid of the `show` template and controller.
 
 Routers and controllers in Phoenix by default follow RESTful naming conventions
-([see here for more information](https://hexdocs.pm/phoenix/routing.html#resources)).
+([see the docs here for more information](https://hexdocs.pm/phoenix/routing.html#resources)).
 
-Our first step is to removing the `show.html.eex` template file from `lib/ptodos_web/templates/todo`.
+Our first step is to removing the `show.html.eex` template file from
+`lib/ptodos_web/templates/todo`.
 
 Once the template is removed, we'll also need to take out the show function from
 the todo_controller (`lib/ptodos_web/controllers/todo_controller.ex`).
@@ -176,7 +177,8 @@ The `create` function will need the same fix.
 
 #### Remove the annoying 'are you sure' confirmation popup for deleting todos
 
-Todos should be really easy to manipulate so let's remove the popup alert from `index.html.eex`. It's a super easy fix, just delete
+Todos should be really easy to manipulate so let's remove the popup alert from
+`index.html.eex`. It's a super easy fix, just delete
 ` data: [confirm: "Are you sure?"],`.
 
 #### Remove the Phoenix branding from the app layout
@@ -188,7 +190,7 @@ in there.
 By default Phoenix also includes a big logo and a link to 'Get Started' with
 Phoenix. Lets trash this.
 
-Delete everything inside the <header> tags to clean it up.
+Delete everything inside and including the <header> tags to clean it up.
 
 ### Test the app
 
