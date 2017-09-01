@@ -492,3 +492,54 @@ def signout(conn, _params) do
   |> redirect(to: todo_path(conn, :index))
 end
 ```
+
+### Authenticate the session for every request
+
+Although the session is saved for logged in users, no check is being made
+against registererd users in the database (so not really authentication).
+
+To fix this we'll add a module plug to the router. Plugs are pretty central to
+Phoenix -
+[hop over to the docs to find out more](https://hexdocs.pm/phoenix/plug.html).
+
+Add the about-to-be-created plug to the `:browser` pipeline in the router. The
+pipeline is a series of steps (plugs) that a request goes through before being
+sent back as a response.  
+
+```elixir
+pipeline :browser do
+  plug :accepts, ["html"]
+  plug :fetch_session
+  plug :fetch_flash
+  plug :protect_from_forgery
+  plug :put_secure_browser_headers
+  plug PtodosWeb.Plugs.SetUser # our soon to be plug
+end
+```
+
+Module plugs go in a `plugs` folder within `controllers`
+(`/lib/ptodos_web/controllers/plugs`). Create a new `set_user.ex` module plug
+and add the below code. I've commented each line to clarify exactly what's going
+on.
+
+```elixir
+defmodule PtodosWeb.Plugs.SetUser do
+  import Plug.Conn # Import the plug module
+
+  alias Ptodos.Users # Give the plug access to our `users` database context
+
+  def init(_params) do # Module plugs require an init function but it can be
+  end # left blank if there's nothing to initialise
+
+  def call(conn, _init_params) do
+    user_id = get_session(conn, :user_id)
+
+    cond do
+      user = user_id && Users.get_user(user_id) -> # If user_id then assign the
+        assign(conn, :user, user) # the complete database user to the conn
+      true ->
+        assign(conn, :user, nil) # otherwise assign the user to nil in the conn
+    end
+  end
+end
+```
