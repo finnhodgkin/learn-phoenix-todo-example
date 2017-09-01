@@ -337,6 +337,75 @@ The `scope` is where we tell Phoenix which requests should go where. For example
 here we're saying that any url starting with "/auth" will be routed to the
 contained `get`s in the AuthController. `:provider` is used because Ueberauth
 can be set up to use multiple OAuth providers (Google, Facebook, Github, etc.).
+More info [in the docs!](https://hexdocs.pm/phoenix/routing.html#scoped-routes)
 
 Ptodos only uses Github OAuth so the only auth urls that'll actually work are
 `/signout`, `/github` and `/github/callback`.
+
+### Add authentication controllers
+
+Ueberauth handles the `/github` route, but we'll need to add our own signout and
+callback controllers to handle adding users to the database, etc.
+
+Create an `auth_controller.ex` file in
+`/lib/ptodos_web/controllers/auth_controller.ex`.
+
+Just like the `page_controller` and `todo_controller`, the auth controller will
+need to be a module and use the `PtodosWeb, :controller`. We'll also need to
+`plug Ueberauth` to gain access to OAuth stuff.
+
+So to start add:
+
+```elixir
+defmodule PtodosWeb.AuthController do
+  use PtodosWeb, :controller
+  plug Ueberauth
+
+end
+```
+
+_But where are the controllers?_
+
+Lets start by defining the functions (controllers) we'll need inside the auth
+module. Ueberauth adds OAuth information to the connection under 'assigns', so
+let's inspect assigns and redirect to the todo index page.
+
+```elixir
+def callback(conn, _params) do
+  IO.inspect conn.assigns
+  redirect(conn, to: todo_path(conn, :index))
+end
+
+def signout(conn, _params) do
+  conn
+end
+```
+
+_But they don't do anything_ :woman_shrugging:
+
+Let's work on the callback first. Hop over to `/github` to see if
+Ueberauth redirects through Github correctly. If all is well it should take you
+through login and then redirect to the todos index.
+
+Take a look in the terminal and you'll see that Ueberauth has popped a bunch of
+user information on `conn.assigns.ueberauth_auth`. For this app we'll only need
+the user's name (from `conn.assigns.ueberauth_auth.user`) and unique id
+(`conn.assigns.ueberauth_auth.info`).
+
+Typing those long addresses multiple times is messy. Pattern matching to the
+rescue:
+
+```elixir
+def callback(%{assigns: %{ueberauth_auth: %{info: %{email: email, name: name}}}} = conn, _params) do
+```
+
+This gives us access to email and name within the callback controller. Now we
+have a user but they're not stored in our database, and the browser won't
+'remember' who it is if you navigate to a different page. Luckily Phoenix has a
+nice session storage setup we can utilise.
+
+Before we get on to that, first let's add a `users` table to the database.
+
+_What about signout?_
+
+We'll leave the signout controller until we've got a working login.
