@@ -496,15 +496,15 @@ end
 ### Authenticate the session for every request
 
 Although the session is saved for logged in users, no check is being made
-against registererd users in the database (so not really authentication).
+against registererd users in the database (no actual authentication as of yet).
 
 To fix this we'll add a module plug to the router. Plugs are pretty central to
 Phoenix -
 [hop over to the docs to find out more](https://hexdocs.pm/phoenix/plug.html).
 
-Add the about-to-be-created plug to the `:browser` pipeline in the router. The
-pipeline is a series of steps (plugs) that a request goes through before being
-sent back as a response.  
+Add the about-to-be-created plug to the `:browser` pipeline in the router. This
+pipeline is a series of steps (plugs) that a request (conn) goes through before
+being sent back as a response.  
 
 ```elixir
 pipeline :browser do
@@ -517,14 +517,14 @@ pipeline :browser do
 end
 ```
 
-Module plugs go in a `plugs` folder within `controllers`
+Module plugs go in a `plugs` directory within `controllers`
 (`/lib/ptodos_web/controllers/plugs`). Create a new `set_user.ex` module plug
 and add the below code. I've commented each line to clarify exactly what's going
 on.
 
 ```elixir
-defmodule PtodosWeb.Plugs.SetUser do
-  import Plug.Conn # Import the plug module
+defmodule PtodosWeb.Plugs.SetUser do # define the module plug
+  import Plug.Conn # Import the plug connection module
 
   alias Ptodos.Users # Give the plug access to our `users` database context
 
@@ -532,14 +532,41 @@ defmodule PtodosWeb.Plugs.SetUser do
   end # left blank if there's nothing to initialise
 
   def call(conn, _init_params) do
-    user_id = get_session(conn, :user_id)
+    user_id = get_session(conn, :user_id) # Get the user id stored on the cookie
 
     cond do
       user = user_id && Users.get_user(user_id) -> # If user_id then assign the
-        assign(conn, :user, user) # the complete database user to the conn
+        assign(conn, :user, user) # user details from the database to the conn
       true ->
         assign(conn, :user, nil) # otherwise assign the user to nil in the conn
     end
   end
 end
+```
+
+There's a problem with the code above. `Users.get_user` doesn't exist yet. The
+Users module currently only has a `get_user!` function.
+
+  The `!` or _bang_ is sort of like 'throw' in javascript - it's used to
+  identify functions that actually error, rather than just returning a tuple
+  like `{:error, _reason}`.
+
+The set_user plug can't _bang_ when there's no user because otherwise non-logged
+in users would just see an error page. To fix this hop in to `users.ex` and
+remove the `!`s from `get_user!` (remember to also change the examples in the
+documentation):
+
+```elixir
+@doc """
+...
+## Examples
+
+    iex> get_user(123)
+    %User{}
+
+    iex> get_user(456)
+    ** (Ecto.NoResultsError)
+
+"""
+def get_user(id), do: Repo.get(User, id)
 ```
