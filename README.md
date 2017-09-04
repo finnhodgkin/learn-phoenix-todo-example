@@ -544,15 +544,15 @@ defmodule PtodosWeb.Plugs.SetUser do # define the module plug
 end
 ```
 
-There's a problem with the code above. `Users.get_user` doesn't exist yet. The
-Users module currently only has a `get_user!` function.
+There's a problem with the code above - `gen.context` doesn't generate a
+`Users.get_user`. Instead, it just has `get_user!`.
 
-  The `!` or _bang_ is sort of like 'throw' in javascript - it's used to
+  The `!` or _bang_ is kind of like 'throw' in javascript - it's used to
   identify functions that actually error, rather than just returning a tuple
   like `{:error, _reason}`.
 
-The set_user plug can't _bang_ when there's no user because otherwise non-logged
-in users would just see an error page. To fix this hop in to `users.ex` and
+The set_user plug can't _bang_ when there's no user because then non-logged
+in users would just see an error page. To fix this, hop in to `users.ex` and
 remove the `!`s from `get_user!` (remember to also change the examples in the
 documentation):
 
