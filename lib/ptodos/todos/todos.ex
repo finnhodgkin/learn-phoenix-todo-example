@@ -42,15 +42,15 @@ defmodule Ptodos.Todos do
 
   ## Examples
 
-      iex> create_todo(%{field: value})
+      iex> create_todo(%{field: value}, user)
       {:ok, %Todo{}}
 
-      iex> create_todo(%{field: bad_value})
+      iex> create_todo(%{field: bad_value}, user)
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_todo(attrs \\ %{}) do
-    %Todo{}
+  def create_todo(attrs \\ %{}, user) do
+    Ecto.build_assoc(user, :todos)
     |> Todo.changeset(attrs)
     |> Repo.insert()
   end

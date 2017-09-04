@@ -6,7 +6,8 @@ defmodule PtodosWeb.TodoController do
 
   def index(conn, _params) do
     todos = Todos.list_todos()
-    render(conn, "index.html", todos: todos)
+    changeset = Ptodos.Todos.change_todo(%Ptodos.Todos.Todo{})
+    render(conn, "index.html", todos: todos, changeset: changeset)
   end
 
   def new(conn, _params) do
@@ -15,7 +16,7 @@ defmodule PtodosWeb.TodoController do
   end
 
   def create(conn, %{"todo" => todo_params}) do
-    case Todos.create_todo(todo_params) do
+    case Todos.create_todo(todo_params, conn.assigns.user) do
       {:ok, todo} ->
         conn
         |> put_flash(:info, "Todo created successfully.")

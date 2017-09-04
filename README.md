@@ -593,3 +593,110 @@ displays either a Login or Logout button. Although it's possible to just use
 `<a>` html tags to point at `/auth/github` and `/auth/signout`, using links
 gives more control because it would keep working even if we changed the
 authentication url.
+
+Hit the link to log in and log out :tada:
+
+### Add todo ownership
+
+To stop users from editing other user's todos the database tables need to be
+linked. Ecto/Phoenix have a great system for managing this.
+
+First generate a migration (`mix ecto.gen.migration adds_user_id_to_todos`) to
+add a `user_id` column to the todos table. This creates a new migration file in
+`/priv/repo/migrations`. Open the new file up and add the new column to the
+todos table:
+
+```elixir
+alter table(:todos) do
+  add :user_id, references(:users)
+end
+```
+
+As well as making the database `:user_id` reference `:users`, Phoenix also
+needs to know how the tables are connected. In `todo.ex` and `user.ex` add the
+following:
+
+```elixir
+schema "todos" do
+  field :title, :string
+  belongs_to :user, Ptodos.Users.User
+
+#...
+
+def changeset(%Todo{} = todo, attrs) do
+  todo
+  |> cast(attrs, [:title, :user_id])
+  |> validate_required([:title, :user_id])
+end
+```
+and
+```elixir
+schema "users" do
+  field :email, :string
+  field :name, :string
+  has_many :todos, Ptodos.Todos.Todo
+#...
+```
+
+Run `mix ecto.migration` to add the new column.
+
+### Hide create todo from un-authenticated users
+
+Instead of having a whole new page for adding todos, let's just add an input to
+the bottom of the list. Copy the form from `new.html.eex` to the bottom of
+`index.html.eex` and then delete `new.html.eex`. Wrap the form in the same if
+block we used above:
+
+```elixir
+<%= if @conn.assigns.user do %>
+  <%= render "add_todo_form.html", Map.put(assigns, :action, todo_path(@conn, :create)) %>
+<% end %>
+```
+
+The index template will need access to the todo changeset for the form to
+function. Hop into the todo controller:
+
+```elixir
+def index(conn, _params) do
+  todos = Todos.list_todos()
+  changeset = Ptodos.Todos.change_todo(%Ptodos.Todos.Todo{})
+  render(conn, "index.html", todos: todos, changeset: changeset)
+end
+```
+
+### Add user_id to new todos
+
+Whenever a todo is created the current user's id should be added. First in
+`todos.ex` the create_todo needs to add a link to the user's id
+([see Ecto association docs for more info](https://hexdocs.pm/ecto/Ecto.html#module-associations)):
+
+```elixir
+def create_todo(attrs \\ %{}, user) do
+  Ecto.build_assoc(user, :todos)
+  |> Todo.changeset(attrs)
+  |> Repo.insert()
+end
+```
+
+The call to `create_todo/1` needs to be changed to `create_todo/2` with user
+details as the second argument:
+
+```elixir
+def create(conn, %{"todo" => todo_params}) do
+  case Todos.create_todo(todo_params, conn.assigns.user) do
+  #...
+```
+
+### Filter todo edit and delete buttons by user
+
+Just wrap the buttons in `index.html.eex` in an if block to check for
+authenticated users:
+
+```elixir
+<%= if @conn.assigns.user && @conn.assigns.user.id == todo.user_id do %>
+  <td class="text-right">
+    <span><%= link "Edit", to: todo_path(@conn, :edit, todo), class: "btn btn-default btn-xs" %></span>
+    <span><%= link "Delete", to: todo_path(@conn, :delete, todo), method: :delete, class: "btn btn-danger btn-xs" %></span>
+  </td>
+<% end %>
+```
