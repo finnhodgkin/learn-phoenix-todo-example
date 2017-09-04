@@ -4,15 +4,13 @@ defmodule PtodosWeb.TodoController do
   alias Ptodos.Todos
   alias Ptodos.Todos.Todo
 
+  plug :authenticate when action in [:create, :edit, :delete, :update]
+  plug :check_owner when action in [:edit, :delete, :update]
+
   def index(conn, _params) do
     todos = Todos.list_todos()
     changeset = Ptodos.Todos.change_todo(%Ptodos.Todos.Todo{})
     render(conn, "index.html", todos: todos, changeset: changeset)
-  end
-
-  def new(conn, _params) do
-    changeset = Todos.change_todo(%Todo{})
-    render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"todo" => todo_params}) do
@@ -52,5 +50,29 @@ defmodule PtodosWeb.TodoController do
     conn
     |> put_flash(:info, "Todo deleted successfully.")
     |> redirect(to: todo_path(conn, :index))
+  end
+
+  defp check_owner(%{params: %{"id" => id}} = conn, _params) do
+    if Todos.get_todo!(id).user_id == conn.assigns.user.id do
+      IO.puts "Authenticated user"
+      conn
+    else
+      IO.puts "NOT authenticated"
+      conn
+      |> put_flash(:error, "You don't own that resource.")
+      |> redirect(to: todo_path(conn, :index))
+      |> halt()
+    end
+  end
+
+  defp authenticate(conn, _params) do
+    if conn.assigns[:user] do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Not logged in.")
+      |> redirect(to: todo_path(conn, :index))
+      |> halt()
+    end
   end
 end

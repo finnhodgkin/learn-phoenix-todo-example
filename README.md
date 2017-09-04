@@ -574,7 +574,7 @@ def get_user(id), do: Repo.get(User, id)
 ### Prove it works
 
 Add a login/logout button to the layout so it's visible on every page. Open up
-`app.html.ex` and add the following code:
+`app.html.ex` and add the following just under the two `get_flash` tags:
 
 ```elixir
 <header>
@@ -687,9 +687,9 @@ def create(conn, %{"todo" => todo_params}) do
   #...
 ```
 
-### Filter todo edit and delete buttons by user
+### Filter the todo list buttons by user
 
-Just wrap the buttons in `index.html.eex` in an if block to check for
+Wrap the buttons in `index.html.eex` in an if block to check for
 authenticated users:
 
 ```elixir
@@ -700,3 +700,44 @@ authenticated users:
   </td>
 <% end %>
 ```
+
+### Stop sneaky users from bypassing authentication
+
+Although un-authenticated users can't see the _edit_ and _delete_ buttons, they
+could still delete todos by sending a well designed post request directly to the
+`:delete` route. Function plugs to the rescue.
+
+Declare two new function plugs at the top of the todo controller:
+
+```elixir
+plug :authenticate when action in [:create, :edit, :delete, :update]
+plug :check_owner when action in [:edit, :delete, :update]
+```
+
+Add the functions to the bottom of the controller:
+
+```elixir
+defp check_owner(%{params: %{"id" => id}} = conn, _params) do
+  if Todos.get_todo!(id).user_id == conn.assigns.user.id do
+    conn
+  else
+    conn
+    |> put_flash(:error, "You don't own that resource.")
+    |> redirect(to: todo_path(conn, :index))
+    |> halt()
+  end
+end
+
+defp authenticate(conn, _params) do
+  if conn.assigns[:user] do
+    conn
+  else
+    conn
+    |> put_flash(:error, "Not logged in.")
+    |> redirect(to: todo_path(conn, :index))
+    |> halt()
+  end
+end
+```
+
+And that's authentication done :)
