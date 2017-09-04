@@ -190,7 +190,7 @@ in there.
 By default Phoenix also includes a big logo and a link to 'Get Started' with
 Phoenix. Lets trash this.
 
-Delete everything inside and including the <header> tags to clean it up.
+Delete everything inside and including the `<header>` tags to clean it up.
 
 ### Test the app
 
@@ -544,17 +544,17 @@ defmodule PtodosWeb.Plugs.SetUser do # define the module plug
 end
 ```
 
-There's a problem with the code above - `gen.context` doesn't generate a
+There's a problem with the code above, `gen.context` doesn't generate a
 `Users.get_user`. Instead, it just has `get_user!`.
 
-  The `!` or _bang_ is kind of like 'throw' in javascript - it's used to
+  > The `!` or _bang_ is kind of like 'throw' in javascript - it's used to
   identify functions that actually error, rather than just returning a tuple
   like `{:error, _reason}`.
 
-The set_user plug can't _bang_ when there's no user because then non-logged
+The set_user plug can't _bang_ when there's no session because then non-logged
 in users would just see an error page. To fix this, hop in to `users.ex` and
 remove the `!`s from `get_user!` (remember to also change the examples in the
-documentation):
+documentation and the `!` from `Repo.get!`):
 
 ```elixir
 @doc """
@@ -570,3 +570,8 @@ documentation):
 """
 def get_user(id), do: Repo.get(User, id)
 ```
+
+### Prove it works
+
+First let's add a login/logout button to the layout so it's visible on every
+page.
