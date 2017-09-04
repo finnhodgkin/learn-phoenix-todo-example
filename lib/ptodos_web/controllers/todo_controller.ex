@@ -53,10 +53,8 @@ defmodule PtodosWeb.TodoController do
 
   defp check_owner(%{params: %{"id" => id}} = conn, _params) do
     if Todos.get_todo!(id).user_id == conn.assigns.user.id do
-      IO.puts "Authenticated user"
       conn
     else
-      IO.puts "NOT authenticated"
       conn
       |> put_flash(:error, "You don't own that resource.")
       |> redirect(to: todo_path(conn, :index))
