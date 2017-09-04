@@ -741,3 +741,11 @@ end
 ```
 
 And that's authentication done :)
+
+## Make todos the homepage
+
+The default Phoenix homepage still displays for the route. Delete the
+page_controller, page template directory and page_view and hop into the
+router. Remove the `get` PageController route and swap the '/todos' path to '/'.
+
+Yippee.

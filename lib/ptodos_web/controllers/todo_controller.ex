@@ -2,7 +2,6 @@ defmodule PtodosWeb.TodoController do
   use PtodosWeb, :controller
 
   alias Ptodos.Todos
-  alias Ptodos.Todos.Todo
 
   plug :authenticate when action in [:create, :edit, :delete, :update]
   plug :check_owner when action in [:edit, :delete, :update]
@@ -15,7 +14,7 @@ defmodule PtodosWeb.TodoController do
 
   def create(conn, %{"todo" => todo_params}) do
     case Todos.create_todo(todo_params, conn.assigns.user) do
-      {:ok, todo} ->
+      {:ok, _todo} ->
         conn
         |> put_flash(:info, "Todo created successfully.")
         |> redirect(to: todo_path(conn, :index))
@@ -34,7 +33,7 @@ defmodule PtodosWeb.TodoController do
     todo = Todos.get_todo!(id)
 
     case Todos.update_todo(todo, todo_params) do
-      {:ok, todo} ->
+      {:ok, _todo} ->
         conn
         |> put_flash(:info, "Todo updated successfully.")
         |> redirect(to: todo_path(conn, :index))
