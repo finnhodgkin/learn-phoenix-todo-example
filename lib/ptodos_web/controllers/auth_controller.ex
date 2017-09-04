@@ -9,6 +9,7 @@ defmodule PtodosWeb.AuthController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Welcome back!")
+        |> put_session(:user_id, user.id)
         |> redirect(to: todo_path(conn, :index))
       {:error, _reason} ->
         conn

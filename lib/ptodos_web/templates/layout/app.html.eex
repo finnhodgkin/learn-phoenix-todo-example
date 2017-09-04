@@ -13,6 +13,15 @@
 
   <body>
     <div class="container">
+      <header>
+        <div>
+          <%= if @conn.assigns[:user] do %>
+              <%= link "Logout", to: auth_path(@conn, :signout) %>
+          <% else %>
+              <%= link "Login with Github", to: auth_path(@conn, :request, "github") %>
+          <% end %>
+        </div>
+      </header>
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 

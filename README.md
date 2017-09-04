@@ -467,7 +467,7 @@ def get_by_email(email), do: Repo.get_by(User, email: email)
 ### Cookie time :cookie:
 
 Adding a secure (encrypted) session cookie is super easy with Phoenix. Just pipe
-the conn in the callback through a put_session call:
+the conn in `callback` through a put_session call:
 
 ```elixir
 def callback(%{assigns: %{ueberauth_auth: %{info: %{email: email, name: name}}}} = conn, _params) do
@@ -573,5 +573,23 @@ def get_user(id), do: Repo.get(User, id)
 
 ### Prove it works
 
-First let's add a login/logout button to the layout so it's visible on every
-page.
+Add a login/logout button to the layout so it's visible on every page. Open up
+`app.html.ex` and add the following code:
+
+```elixir
+<header>
+  <div>
+    <%= if @conn.assigns[:user] do %>
+        <%= link "Logout", to: auth_path(@conn, :signout) %>
+    <% else %>
+        <%= link "Login with Github", to: auth_path(@conn, :request, "github") %>
+    <% end %>
+  </div>
+</header>
+```
+
+`if @conn.assigns[:user]` checks to see if the user is authenticated and
+displays either a Login or Logout button. Although it's possible to just use
+`<a>` html tags to point at `/auth/github` and `/auth/signout`, using links
+gives more control because it would keep working even if we changed the
+authentication url.
