@@ -766,3 +766,11 @@ router to fix this. Remove the `get` PageController route and swap the `/todos`
 path to `/`.
 
 Yippee.
+
+
+## Todo
+1. User-owned lists to teach more in-depth database table integration.
+1. An api route so todos can be marked as complete on the front-end without
+a page refresh.
+1. Customise the html/css to make it more dwyl (maybe tachyons?).
+1. Stretch goal: channels for live updates.
