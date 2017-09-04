@@ -496,7 +496,8 @@ end
 ### Authenticate the session for every request
 
 Although the session is saved for logged in users, no check is being made
-against registererd users in the database (no actual authentication as of yet).
+against previously registerered users in the database (so no actual authentication
+as of yet).
 
 To fix this we'll add a module plug to the router. Plugs are pretty central to
 Phoenix -
@@ -746,6 +747,6 @@ And that's authentication done :)
 
 The default Phoenix homepage still displays for the route. Delete the
 page_controller, page template directory and page_view and hop into the
-router. Remove the `get` PageController route and swap the '/todos' path to '/'.
+router. Remove the `get` PageController route and swap the `/todos` path to `/`.
 
 Yippee.
