@@ -36,7 +36,7 @@ __For users coming from before version 1.3: Where's my web folder!?__
 
 The launch of 1.3 included some pretty major changes to server file structure.
 The web folder where most Phoenix codes lives used to sit in the project
-root. Instead it's now located in `/lib/<projectname>_web`.
+root. It's now located in `/lib/<projectname>_web`.
 
 For a more comprehensive list of changes, and some info on the reasoning
 behind the changes either read
