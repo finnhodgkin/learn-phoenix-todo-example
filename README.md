@@ -35,12 +35,12 @@ setup.
 __For users coming from before version 1.3: Where's my web folder!?__
 
 The launch of 1.3 included some pretty major changes to server file structure.
-The web folder - where most Phoenix codes lives - used to sit in the project
-root. Instead, it's now located in `/lib/<projectname>_web`.
+The web folder where most Phoenix codes lives used to sit in the project
+root. Instead it's now located in `/lib/<projectname>_web`.
 
 For a more comprehensive list of changes, and some info on the reasoning
-behind the changes either
-[read this overview on medium](https://medium.com/wemake-services/why-changes-in-phoenix-1-3-are-so-important-2d50c9bdabb9)
+behind the changes either read
+[this overview on medium](https://medium.com/wemake-services/why-changes-in-phoenix-1-3-are-so-important-2d50c9bdabb9)
 or watch
 [this video from ElixirConf 2017 (not very beginner friendly but super informative)](https://www.youtube.com/watch?v=tMO28ar0lW8).
 
@@ -60,10 +60,10 @@ If you've lost or don't know your password, try following
 
 ## Add a route to display todos
 
-Our first step is to add a route to our server for displaying and manipulating
-todos. To accomplish this, a new table will need to be added to our database and
-Phoenix will need some instructions on how to communicate with the table. We'll
-also start to explore templating with Phoenix (serving dynamic html pages).
+The first step is to add a route to our server for displaying and manipulating
+todos. To accomplish this a new table needs to be added to the database and
+Phoenix needs some instruction on how to communicate with that table. We'll
+also delve into templating with Phoenix (serving dynamic html pages).
 
 ### Generate a todos route
 Run `mix phx.gen.html Todos Todo todos title:string`.
@@ -93,7 +93,7 @@ find out more (you guessed it) head over to the
 [Phoenix routing guide](https://hexdocs.pm/phoenix/routing.html).
 
 So following the instructions from the generator prompt we can add
-`resources "/todos", TodoController` to our router, just underneath the line
+`resources "/todos", TodoController` to our router just underneath the line
 with a PageController: `get "/", PageController, :index`
 
 ### Add the new todos table to the database
@@ -104,38 +104,37 @@ to add our own migrations (changes to the database) later in this guide.
 Use `mix phx.server` to run the server. Phoenix ships with live reloading so
 generally while coding you can just leave the server running in the command line
 and it'll refresh whenever you make changes. The only time this isn't the case
-is when you make changes to your dependencies or sometimes with databasae
-stuff. If in doubt just close the server by hitting `ctrl+c` twice and start it
-up again.
+is when you make changes to your dependencies or to the database. If in doubt
+just close the server by hitting `ctrl+c` twice and start it up again.
 
 To access server functions from the command line without actually running the
 server (great for debugging) use `iex -S mix`.
 
 Once your server is up and running head over to http://0.0.0.0:4000/todos to see
-our new route in the browser :sparkles:
+the new route in the browser :sparkles:
 
-Double check that it all works by adding, editing and removing a todo.
+Double check that it works by adding, editing and removing a todo.
 
-### HELP WANTED!!
+### HELP WANTED!
 A section on the relationship between the router, controllers and templates
-would be amazing here. If anyone has the time to type one up that would be super
+would be amazing here. If anyone has the time to type one up that it be super
 useful. For the moment the Phoenix router guide linked above contains most of
 the relevent info.
 
 ### Time for some cleanup!
 
 #### Remove the show template
-Because the todo app's purpose is just displaying a list of tickable todos, we
+Because the todo app's purpose is just displaying a list of tickable todos we
 don't really want individual pages for each one. To remove this feature we'll
 need to get rid of the `show` template and controller.
 
 Routers and controllers in Phoenix by default follow RESTful naming conventions
 ([see the docs here for more information](https://hexdocs.pm/phoenix/routing.html#resources)).
 
-Our first step is to removing the `show.html.eex` template file from
+First remove the `show.html.eex` template file from
 `lib/ptodos_web/templates/todo`.
 
-Once the template is removed, we'll also need to take out the show function from
+Once the template is removed we'll also need to take out the show function from
 the todo_controller (`lib/ptodos_web/controllers/todo_controller.ex`).
 
 #### Remove all links and redirects to the show route
@@ -184,8 +183,7 @@ Todos should be really easy to manipulate so let's remove the popup alert from
 #### Remove the Phoenix branding from the app layout
 
 The layout file (`templates/layout/app.html.eex`) holds all html content that's
-shared between many pages. For example css imports and html headers usually sit
-in there.
+shared between many pages, for example css imports and html headers.
 
 By default Phoenix also includes a big logo and a link to 'Get Started' with
 Phoenix. Lets trash this.
@@ -206,12 +204,14 @@ it'll look something like this:
 Next we'll add OAuth user authentication so our todos can only be changed by
 their owners. To accomplish this we'll be using the Elixir
 [Ueberauth module](https://github.com/ueberauth/ueberauth) with the
-[Github OAuth strategy](https://github.com/ueberauth/ueberauth_github). New
-modules can be added to a project by including them in the `mix.exs` and
-installing with `mix deps.get`. OAuth also requires some hidden keys that we
-don't want pushed up to version control (Github, etc.) - for this we'll be using
+[Github OAuth strategy](https://github.com/ueberauth/ueberauth_github). OAuth
+also requires some hidden keys that we don't want pushed up to version control
+(Github, etc.) - for this we'll be using
 [Envy](https://github.com/BlakeWilliams/envy) to automatically load environment
 variables.
+
+Modules in Elixir are installed by adding them to the `mix.exs` and installing
+with `mix deps.get`.
 
 ### Installing the dependencies
 
@@ -221,11 +221,27 @@ Hop into mix.exs and add `:ueberauth` and `:ueberauth_github` to
 ![extra_applications](https://user-images.githubusercontent.com/22300773/29924988-d0304744-8e56-11e7-9c47-6c78b610e8a4.png)
 
 We'll also need to add all three modules to our dependencies list. At the time
-of writing (Aug 2017) the version numbers in the picture below are all up to
+of writing (Aug 2017) the version numbers in the code below are all up to
 date. To be on the safe side have a quick Google to check there aren't any newer
 versions available.
 
-![dependencies](https://user-images.githubusercontent.com/22300773/29925540-7f452b36-8e58-11e7-9a8f-1a80a15f0be5.png)
+```elixir
+defp deps do
+  [
+    {:phoenix, "~> 1.3.0"},
+    {:phoenix_pubsub, "~> 1.0"},
+    {:phoenix_ecto, "~> 3.2"},
+    {:postgrex, ">= 0.0.0"},
+    {:phoenix_html, "~> 2.10"},
+    {:phoenix_live_reload, "~> 1.0", only: :dev},
+    {:gettext, "~> 0.11"},
+    {:cowboy, "~> 1.0"},
+    {:ueberauth, "~> 0.4"},
+    {:ueberauth_github, "~> 0.4"},
+    {:envy, "~> 1.1.1"}
+  ]
+end
+```
 
 ### Configuring the dependencies
 
@@ -234,11 +250,11 @@ Both Ueberauth and Envy require some additional configuration.
 __Ueberauth__
 
 Ueberauth is an amazing module that does a ton of authentication setup behind
-the scenes. Unfortunately it doesn't quite do __everything__. We need to provide
-it with some info about our application setup: which OAuth providers to use, and
-the OAuth _client id_ and _secret_.
+the scenes. Unfortunately it doesn't quite do __everything__. We'll need to
+provide it with some info about our application setup: which OAuth providers to
+use, and the OAuth _client id_ and _secret_.
 
-The first step's easy because we only need to add one provider -- Github OAuth.
+The first step's easy because we only need to add one provider: Github OAuth.
 Open up `config/config.exs` and chuck the following code at the end of the file:
 
 ```elixir
@@ -249,9 +265,9 @@ config :ueberauth, Ueberauth,
 ```
 
 In the next few steps we'll connect Envy to a `.env` file containing our Github
-OAuth information. For the moment it's fine to just point Ueberauth at some
+OAuth information. For the moment it's fine to just point Ueberauth to some
 non-existent __GITHUB_SECRET__ and __GITHUB_CLIENT_ID__ environment variables.
-Add the following right underneath the previous code block:   
+Add the following below the previous code block:   
 
 ```elixir
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
@@ -283,10 +299,9 @@ __Envy__
 Environment variables are absolutely pointless if we don't add the secrets they
 contain to our application's .gitignore.
 
-__Before moving on add a line with `*.env` to your .gitignore, then add and
-commit your changes!__
+__Before moving on add a line with `*.env` to your .gitignore.__
 
-Once you're sure git isn't going to push your secrets to Github, create a
+When you're sure git isn't going to push your secrets to Github, create a
 `config.env` in the project root and add your OAuth Client ID and Secret with
 the following format:
 
@@ -318,7 +333,7 @@ OAuth handshake, but we still need to tell our router that Ueberauth exists, and
 also how to handle authentication.
 
 First `require` Ueberauth just after `use PtodosWeb, :router` at the top of
-the router. If you're coming from the land of Node.js then this will look
+the router. If you're coming from the land of Node.js then this may look
 familiar :sparkles:
 
 Next add an Auth scope:
@@ -337,7 +352,7 @@ The `scope` is where we tell Phoenix which requests should go where. For example
 here we're saying that any url starting with "/auth" will be routed to the
 contained `get`s in the AuthController. `:provider` is used because Ueberauth
 can be set up to use multiple OAuth providers (Google, Facebook, Github, etc.).
-More info [in the docs!](https://hexdocs.pm/phoenix/routing.html#scoped-routes)
+More info on scopes [in the docs!](https://hexdocs.pm/phoenix/routing.html#scoped-routes)
 
 Ptodos only uses Github OAuth so the only auth urls that'll actually work are
 `/signout`, `/github` and `/github/callback`.
@@ -364,7 +379,7 @@ defmodule PtodosWeb.AuthController do
 end
 ```
 
-> _But where are the controllers?_
+> ___But where are the controllers?___
 
 Lets start by defining the functions (controllers) we'll need inside the auth
 module. Ueberauth adds OAuth information to the connection under 'assigns', so
@@ -381,16 +396,16 @@ def signout(conn, _params) do
 end
 ```
 
-> _But they don't do anything_ :woman_shrugging:
+> ___But they don't do anything___ :woman_shrugging:
 
 Let's work on the callback first. Hop over to `/github` to see if
-Ueberauth redirects through Github correctly. If all is well it should take you
+Ueberauth redirects through Github correctly. If all's well it should take you
 through login and then redirect to the todos index.
 
 Take a look in the terminal and you'll see that Ueberauth has popped a bunch of
-user information on `conn.assigns.ueberauth_auth`. For this app we'll only need
-the user's name (from `conn.assigns.ueberauth_auth.user`) and unique id
-(`conn.assigns.ueberauth_auth.info`).
+Github user information on `conn.assigns.ueberauth_auth`. For this app we'll
+only need the user's name (from `conn.assigns.ueberauth_auth.user`) and unique
+id (`conn.assigns.ueberauth_auth.info`).
 
 Typing those long addresses multiple times is messy. Pattern matching to the
 rescue:
@@ -399,14 +414,15 @@ rescue:
 def callback(%{assigns: %{ueberauth_auth: %{info: %{email: email, name: name}}}} = conn, _params) do
 ```
 
-This gives us access to email and name within the callback controller. Now we
-have a user but they're not stored in our database, and the browser won't
-'remember' who it is if you navigate to a different page. Luckily Phoenix has a
-nice session storage setup we can utilise.
+Okay maybe that's still a bit messy :woman_shrugging:. This gives us access to
+email and name within the callback controller. Now we have a user but they're
+not stored in our database, and the browser won't 'remember' who it is if you
+navigate to a different page. Luckily Phoenix has a nice session storage setup
+we can utilise.
 
-Before we get on to that, let's work on adding `users` to the database.
+Before we get on to that let's work on adding `users` to the database.
 
-> _What about signout?_
+> ___What about signout?___
 
 We'll leave the signout controller until we've got a working login.
 
@@ -467,7 +483,7 @@ def get_by_email(email), do: Repo.get_by(User, email: email)
 ### Cookie time :cookie:
 
 Adding a secure (encrypted) session cookie is super easy with Phoenix. Just pipe
-the conn in `callback` through a put_session call:
+the conn through a put_session call:
 
 ```elixir
 def callback(%{assigns: %{ueberauth_auth: %{info: %{email: email, name: name}}}} = conn, _params) do
@@ -496,8 +512,8 @@ end
 ### Authenticate the session for every request
 
 Although the session is saved for logged in users, no check is being made
-against previously registerered users in the database (so no actual authentication
-as of yet).
+against previously registerered users in the database (so no actual
+authentication as of yet).
 
 To fix this we'll add a module plug to the router. Plugs are pretty central to
 Phoenix -
@@ -574,7 +590,7 @@ def get_user(id), do: Repo.get(User, id)
 
 ### Prove it works
 
-Add a login/logout button to the layout so it's visible on every page. Open up
+First we'll need a login/logout that's visible on every page. Open up
 `app.html.ex` and add the following just under the two `get_flash` tags:
 
 ```elixir
@@ -592,19 +608,19 @@ Add a login/logout button to the layout so it's visible on every page. Open up
 `if @conn.assigns[:user]` checks to see if the user is authenticated and
 displays either a Login or Logout button. Although it's possible to just use
 `<a>` html tags to point at `/auth/github` and `/auth/signout`, using links
-gives more control because it would keep working even if we changed the
-authentication url.
+gives more control because they continue to work even if the route url is
+changed.
 
 Hit the link to log in and log out :tada:
 
 ### Add todo ownership
 
-To stop users from editing other user's todos the database tables need to be
-linked. Ecto/Phoenix have a great system for managing this.
+To stop users from editing other user's todos the `todos` and `users` tables
+need to be linked. Ecto/Phoenix have a great system for managing this.
 
 First generate a migration (`mix ecto.gen.migration adds_user_id_to_todos`) to
 add a `user_id` column to the todos table. This creates a new migration file in
-`/priv/repo/migrations`. Open the new file up and add the new column to the
+`/priv/repo/migrations`. Open the new file and add a `:user_id` column to the
 todos table:
 
 ```elixir
@@ -621,7 +637,6 @@ following:
 schema "todos" do
   field :title, :string
   belongs_to :user, Ptodos.Users.User
-
 #...
 
 def changeset(%Todo{} = todo, attrs) do
@@ -645,8 +660,8 @@ Run `mix ecto.migration` to add the new column.
 
 Instead of having a whole new page for adding todos, let's just add an input to
 the bottom of the list. Copy the form from `new.html.eex` to the bottom of
-`index.html.eex` and then delete `new.html.eex`. Wrap the form in the same if
-block we used above:
+`index.html.eex` and delete `new.html.eex`. Wrap the form in the same if block
+we used above:
 
 ```elixir
 <%= if @conn.assigns.user do %>
@@ -668,8 +683,8 @@ end
 ### Add user_id to new todos
 
 Whenever a todo is created the current user's id should be added. First in
-`todos.ex` the create_todo needs to add a link to the user's id
-([see Ecto association docs for more info](https://hexdocs.pm/ecto/Ecto.html#module-associations)):
+`todos.ex` create_todo needs access to the user's id
+([see the Ecto association docs for more info](https://hexdocs.pm/ecto/Ecto.html#module-associations)):
 
 ```elixir
 def create_todo(attrs \\ %{}, user) do
@@ -679,8 +694,8 @@ def create_todo(attrs \\ %{}, user) do
 end
 ```
 
-The call to `create_todo/1` needs to be changed to `create_todo/2` with user
-details as the second argument:
+The call to `create_todo/1` also needs to be changed to `create_todo/2` with
+user details as the second argument:
 
 ```elixir
 def create(conn, %{"todo" => todo_params}) do
@@ -690,8 +705,8 @@ def create(conn, %{"todo" => todo_params}) do
 
 ### Filter the todo list buttons by user
 
-Wrap the buttons in `index.html.eex` in an if block to check for
-authenticated users:
+Wrap the buttons in `index.html.eex` in an if block to check for authenticated
+users:
 
 ```elixir
 <%= if @conn.assigns.user && @conn.assigns.user.id == todo.user_id do %>
@@ -745,8 +760,9 @@ And that's authentication done :)
 
 ## Make todos the homepage
 
-The default Phoenix homepage still displays for the route. Delete the
+The default Phoenix homepage still displays for the index route. Delete the
 page_controller, page template directory and page_view and hop into the
-router. Remove the `get` PageController route and swap the `/todos` path to `/`.
+router to fix this. Remove the `get` PageController route and swap the `/todos`
+path to `/`.
 
 Yippee.
