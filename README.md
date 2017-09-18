@@ -39,11 +39,9 @@ setup.
 __For users coming from before version 1.3: Where's my web folder!?__
 
 The launch of 1.3 included some pretty major changes to server file structure.
-The web folder where most Phoenix codes lives used to sit in the project
-root. It's now located in `/lib/<projectname>_web`.
+The `web` folder, where most Phoenix code used to live, is now located in `/lib/<projectname>_web`.
 
-For a more comprehensive list of changes, and some info on the reasoning
-behind the changes either read
+For a more comprehensive list of changes and the reasoning behind them have a read of
 [this overview on medium](https://medium.com/wemake-services/why-changes-in-phoenix-1-3-are-so-important-2d50c9bdabb9)
 or watch
 [this video from ElixirConf 2017 (not very beginner friendly but super informative)](https://www.youtube.com/watch?v=tMO28ar0lW8).
@@ -65,9 +63,9 @@ If you've lost or don't know your password, try following
 ## Add a route to display todos
 
 The first step is to add a route to the server for displaying and manipulating
-todos. To accomplish this a new table has to be added to the database and
-Phoenix needs some instruction on how to communicate with that table. The
-content is then served up via Phoenix templates (dynamic html pages).
+todos. You'll need to add a todos table to the database and also give Phoenix some
+instruction on how it should be accessed. The database content can then be
+served up via Phoenix templates (dynamic html pages).
 
 ### Generate a todos route
 Run `mix phx.gen.html Todos Todo todos title:string`.
@@ -81,14 +79,13 @@ database-only stuff.
 To find out what the heck `phx.gen.html` is doing, head over to
 [the Phoenix docs!](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Html.html#content)
 
-Once you've run the command, after the generation logs in the terminal there
-should be a prompt about the new files:
+After running the command there should be a final prompt about the new files:
 
 > Add the resource to your browser scope in lib/todos_web/router.ex:<br><br>
     resources "/todos", TodoController
 
 ### Do the router thing
-Following the hint above add the new `todos` route to the router
+Following the hint add the new `todos` route to the router
 (`/lib/ptodos_web/router.ex`) :sparkles:
 
 >__The router__
@@ -97,7 +94,7 @@ find out more (you guessed it) have a look at the
 [Phoenix docs on routing](https://hexdocs.pm/phoenix/routing.html).
 
 Following the instructions from the generator prompt add
-`resources "/todos", TodoController` to the router just underneath the line
+`resources "/todos", TodoController` to the router underneath the line
 with a PageController: `get "/", PageController, :index`
 
 ### Add the new todos table to the database
@@ -134,15 +131,15 @@ the relevent info.
 
 Because the todo app's purpose is to display a list of tickable todos,
 there's no need for individual 'show' pages for each todo. To remove this feature
-the `show` template and controller will need to be deleted.
+the `show` template and controller function will need to go.
 
 Routers and controllers in Phoenix by default follow RESTful naming conventions
 ([see the docs here for more information](https://hexdocs.pm/phoenix/routing.html#resources)).
 
-First remove the `show.html.eex` template file from
+Remove the `show.html.eex` template file from
 `lib/ptodos_web/templates/todo`.
 
-Once the template is removed we'll also need to take out the show function from
+Once the template is removed you'll also need to take out the show function from
 the todo_controller (`lib/ptodos_web/controllers/todo_controller.ex`).
 
 #### Remove all links and redirects to the show route
